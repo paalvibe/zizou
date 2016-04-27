@@ -11,6 +11,8 @@ Elo ranking managed through the messaging software Slack.
 Give this webhook the channel you want zizou to listen to, and set the trigger word as `fifa`.
 * Set the Outgoing Webhook token as an environment variable named: `SLACK_WEBHOOK_TOKEN`
 
+The hook should post to POST to http://sch-zizou.herokuapp.com/bot. Note the bot part.
+
 ## Usage
 
 Zizou comes pre-packaged with a set of commands designed to help you store and retrieves 1v1 and 2v2 matches.
