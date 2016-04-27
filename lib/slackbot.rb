@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'slack'
 require 'ribery'
 require 'taunt'
@@ -20,7 +21,8 @@ class SlackBot
     begin
       return self.send("hear_#{data[1]}", *data[2..-1])
     rescue Exception => e
-      puts e
+      return "exception: #{e}"
+      # puts e
       return help
     end
   end
