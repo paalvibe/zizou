@@ -64,7 +64,6 @@ ActiveRecord::Schema.define(version: 20150911122125) do
   create_table "teams", force: :cascade do |t|
     t.string   "name"
     t.integer  "attack"
-    t.integer  "midfield"
     t.integer  "defense"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

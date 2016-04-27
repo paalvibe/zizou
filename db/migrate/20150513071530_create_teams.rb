@@ -3,7 +3,6 @@ class CreateTeams < ActiveRecord::Migration
     create_table :teams do |t|
       t.string :name
       t.integer :attack
-      t.integer :midfield
       t.integer :defense
 
       t.timestamps null: false

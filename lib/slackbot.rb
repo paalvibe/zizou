@@ -165,13 +165,13 @@ class SlackBot
 
   def hear_teams
     teams = Team.order(:name)
-    teams.map { |team| "#{team.name}\tA: #{team.attack}\tM: #{team.midfield}\tD: #{team.defense}" }.join("\n")
+    teams.map { |team| "#{team.name}\tA: #{team.attack}\tD: #{team.defense}" }.join("\n")
   end
 
-  def hear_addteam(name, attack, midfield, defense)
-    Team.create_or_update(name: name, attack: attack, midfield: midfield, defense: defense)
+  def hear_addteam(name, attack, defense)
+    Team.create_or_update(name: name, attack: attack, defense: defense)
 
-    "#{name}(#{attack}, #{midfield}, #{defense}) créé"
+    "#{name}(#{attack}, #{defense}) créé"
   end
 
   def hear_challenge(player, time = "")

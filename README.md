@@ -18,7 +18,7 @@ The hook should post to POST to http://sch-zizou.herokuapp.com/bot. Note the bot
 Zizou comes pre-packaged with a set of commands designed to help you store and retrieves 1v1 and 2v2 matches.
 
 * First, add the teams you plan to use and their ratings in Zizou with the following command:
-`fifa addteam BAR XX XX XX`. Obviously, replace BAR by the acronym of the team you want to add, and the XXs by respectively, the attack, midfield, and defense ratings of the team.
+`fifa addteam BAR XX XX XX`. Obviously, replace BAR by the acronym of the team you want to add, and the XXs by respectively, the attack, and defense ratings of the team.
 * Then, you're ready to add matches with the following command:
 `fifa match @slack_player_username TEAM score @slack_player_username TEAM score`. Replace TEAM by the team acronym and score by the actual score the player had in the game.
 Example: `fifa match @bill_gates BAR 4 @bill_murray ASSE 5`
@@ -33,7 +33,7 @@ fifa r2 [n_weeks]
 fifa 2v2 player11 player12 team1 score1 player21 player22 team2 score2
 fifa match player1 team1 score1 player2 team2 score2
 fifa teams
-fifa addteam name attack midfield defense
+fifa addteam name attack defense
 fifa challenge player [time]
 fifa challenges
 fifa stats player
