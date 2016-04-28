@@ -290,8 +290,11 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     "Dernier match supprimé ! Le classement a été mis à jour."
   end
 
-  def hear_ribery
-    Ribery::QUOTES.sample
+  def hear_norske_sitater
+    NorskFotball::QUOTES.sample
   end
 
+  def hear_random_quotes
+    FootballQuotes::QUOTES.sample
+  end
 end
