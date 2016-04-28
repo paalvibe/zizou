@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'slack'
-require 'ribery'
+require 'football_quotes'
+require 'norsk_fotball'
 require 'taunt'
 require 'terminal-table'
 require 'net/http'
