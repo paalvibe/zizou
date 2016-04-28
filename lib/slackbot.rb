@@ -53,6 +53,53 @@ class SlackBot
     username[2..-2]
   end
 
+
+  def create_team_if_missing(name, defense, attack)
+    team = Team.find_by_name(name)
+    if team
+      return
+    end
+    Team.create_or_update(name: name, attack: attack, defense: defense)
+  end
+
+  def match(player1, team1, score1, player2, team2, score2)
+    _player1 = Player.find_or_create_by(username: extract_user_id(player1))
+    _player2 = Player.find_or_create_by(username: extract_user_id(player2))
+
+    _team1, _team2 = Team.find_by_name(team1), Team.find_by_name(team2)
+
+    return "Équipe #{team1} inconnue" if _team1.nil?
+    return "Équipe #{team2} inconnue" if _team2.nil?
+
+    game = create_game_with_players(_player1, _player2, _team1, _team2, score1, score2)
+
+    answer = "Match (#{player1}, #{team1}, #{score1}) - (#{player2}, #{team2}, #{score2}) créé"
+
+    if game.drawn?
+      answer += Taunt::MATCH_DRAWN.sample
+    elsif [0, 1].sample == 0
+      answer += Taunt::MATCH_WINNER.sample % format_username(game.winner.player.username)
+    else
+      answer += Taunt::MATCH_LOSER.sample % format_username(game.loser.player.username)
+    end
+
+    return answer
+  end
+
+  def result_2v2(player11, player12, team1, score1, player21, player22, team2, score2)
+    _player1 = PairPlayer.find_or_create_by_users(extract_user_id(player11), extract_user_id(player12))
+    _player2 = PairPlayer.find_or_create_by_users(extract_user_id(player21), extract_user_id(player22))
+
+    _team1, _team2 = Team.find_by_name(team1), Team.find_by_name(team2)
+
+    return "Équipe #{team1} inconnue" if _team1.nil?
+    return "Équipe #{team2} inconnue" if _team2.nil?
+
+    create_game_with_players(_player1, _player2, _team1, _team2, score1, score2)
+
+    "Match (#{player11}, #{player12}, #{team1}, #{score1}) - (#{player21}, #{player22}, #{team2}, #{score2}) créé"
+  end
+
   def create_game_with_players(player1, player2, team1, team2, score1, score2)
     team_player1 = TeamPlayer.create(player: player1, team: team1, score: score1.to_i)
     team_player2 = TeamPlayer.create(player: player2, team: team2, score: score2.to_i)
@@ -109,11 +156,23 @@ class SlackBot
 
   # all hearers
 
+  DEFAULT_TEAM = "spt_default_team"
+
+  def hear_1on1_result(player1, score1, player2, score2)
+    create_team_if_missing(DEFAULT_TEAM)
+    hear_match(player1, DEFAULT_TEAM, score1, player2, DEFAULT_TEAM, score2)
+  end
+
+  def hear_2on2_result(player1, score1, player2, score2)
+    create_team_if_missing(DEFAULT_TEAM)
+    result_2v2(player11, player12, DEFAULT_TEAM, score1, player21, player22, DEFAULT_TEAM, score2)
+  end
+
   def hear_ranking(n_weeks = 0)
     ranking_for_scope(Player.player, n_weeks)
   end
 
-  def hear_ranking2(n_weeks = 0)
+  def hear_ranking_2on2(n_weeks = 0)
     ranking_for_scope(PairPlayer.all, n_weeks)
   end
 
@@ -121,58 +180,28 @@ class SlackBot
     r_for_scope(Player.player, n_weeks)
   end
 
-  def hear_r2(n_weeks = 0)
+  def hear_r2on2(n_weeks = 0)
     r_for_scope(PairPlayer.all, n_weeks)
   end
 
-  def hear_2v2(player11, player12, team1, score1, player21, player22, team2, score2)
-    _player1 = PairPlayer.find_or_create_by_users(extract_user_id(player11), extract_user_id(player12))
-    _player2 = PairPlayer.find_or_create_by_users(extract_user_id(player21), extract_user_id(player22))
+ # def hear_2v2(player11, player12, team1, score1, player21, player22, team2, score2)
+ #   2v2(player11, player12, team1, score1, player21, player22, team2, score2)
+ # end
 
-    _team1, _team2 = Team.find_by_name(team1), Team.find_by_name(team2)
+  # def hear_match(player1, team1, score1, player2, team2, score2)
+  #   match(player1, team1, score1, player2, team2, score2)
+  # end
 
-    return "Équipe #{team1} inconnue" if _team1.nil?
-    return "Équipe #{team2} inconnue" if _team2.nil?
+  # def hear_teams
+  #   teams = Team.order(:name)
+  #   teams.map { |team| "#{team.name}\tA: #{team.attack}\tD: #{team.defense}" }.join("\n")
+  # end
 
-    create_game_with_players(_player1, _player2, _team1, _team2, score1, score2)
+  # def hear_addteam(name, attack, defense)
+  #   Team.create_or_update(name: name, attack: attack, defense: defense)
 
-    "Match (#{player11}, #{player12}, #{team1}, #{score1}) - (#{player21}, #{player22}, #{team2}, #{score2}) créé"
-  end
-
-  def hear_match(player1, team1, score1, player2, team2, score2)
-    _player1 = Player.find_or_create_by(username: extract_user_id(player1))
-    _player2 = Player.find_or_create_by(username: extract_user_id(player2))
-
-    _team1, _team2 = Team.find_by_name(team1), Team.find_by_name(team2)
-
-    return "Équipe #{team1} inconnue" if _team1.nil?
-    return "Équipe #{team2} inconnue" if _team2.nil?
-
-    game = create_game_with_players(_player1, _player2, _team1, _team2, score1, score2)
-
-    answer = "Match (#{player1}, #{team1}, #{score1}) - (#{player2}, #{team2}, #{score2}) créé"
-
-    if game.drawn?
-      answer += Taunt::MATCH_DRAWN.sample
-    elsif [0, 1].sample == 0
-      answer += Taunt::MATCH_WINNER.sample % format_username(game.winner.player.username)
-    else
-      answer += Taunt::MATCH_LOSER.sample % format_username(game.loser.player.username)
-    end
-
-    return answer
-  end
-
-  def hear_teams
-    teams = Team.order(:name)
-    teams.map { |team| "#{team.name}\tA: #{team.attack}\tD: #{team.defense}" }.join("\n")
-  end
-
-  def hear_addteam(name, attack, defense)
-    Team.create_or_update(name: name, attack: attack, defense: defense)
-
-    "#{name}(#{attack}, #{defense}) créé"
-  end
+  #   "#{name}(#{attack}, #{defense}) créé"
+  # end
 
   def hear_challenge(player, time = "")
     other_user_id = extract_user_id(player)
@@ -261,4 +290,5 @@ class SlackBot
   def hear_ribery
     Ribery::QUOTES.sample
   end
+
 end
