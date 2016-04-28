@@ -158,12 +158,12 @@ class SlackBot
 
   DEFAULT_TEAM = "spt_default_team"
 
-  def hear_1on1_result(player1, score1, player2, score2)
+  def hear_result_1on1(player1, score1, player2, score2)
     create_team_if_missing(DEFAULT_TEAM)
-    hear_match(player1, DEFAULT_TEAM, score1, player2, DEFAULT_TEAM, score2)
+    match(player1, DEFAULT_TEAM, score1, player2, DEFAULT_TEAM, score2)
   end
 
-  def hear_2on2_result(player11, player12, score1, player21, player22, score2)
+  def hear_result_2on2(player11, player12, score1, player21, player22, score2)
     create_team_if_missing(DEFAULT_TEAM)
     result_2v2(player11, player12, DEFAULT_TEAM, score1, player21, player22, DEFAULT_TEAM, score2)
   end
