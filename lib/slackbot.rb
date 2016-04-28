@@ -21,7 +21,8 @@ class SlackBot
     begin
       return self.send("hear_#{data[1]}", *data[2..-1])
     rescue Exception => e
-      # return "exception: #{e}"
+      Rails.logger.error "exception: #{e}"
+      return "exception: #{e}"
       puts e
       return help
     end
