@@ -22,7 +22,6 @@ class SlackBot
       return self.send("hear_#{data[1]}", *data[2..-1])
     rescue Exception => e
       Rails.logger.error "exception: #{e}"
-      return "exception: #{e}"
       puts e
       return help
     end
@@ -160,12 +159,12 @@ class SlackBot
   DEFAULT_TEAM = "spt_default_team"
 
   def hear_result_1on1(player1, score1, player2, score2)
-    create_team_if_missing(DEFAULT_TEAM)
+    create_team_if_missing(DEFAULT_TEAM, 1, 1)
     match(player1, DEFAULT_TEAM, score1, player2, DEFAULT_TEAM, score2)
   end
 
   def hear_result_2on2(player11, player12, score1, player21, player22, score2)
-    create_team_if_missing(DEFAULT_TEAM)
+    create_team_if_missing(DEFAULT_TEAM, 1, 1)
     result_2v2(player11, player12, DEFAULT_TEAM, score1, player21, player22, DEFAULT_TEAM, score2)
   end
 
