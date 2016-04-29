@@ -2,6 +2,7 @@
 require 'slack'
 require 'football_quotes'
 require 'norsk_fotball'
+require 'ranking'
 require 'taunt'
 require 'terminal-table'
 require 'net/http'
@@ -172,8 +173,12 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     result_2v2(player11, player12, DEFAULT_TEAM, score1, player21, player22, DEFAULT_TEAM, score2)
   end
 
-  def hear_ranking(n_weeks = 0)
+  def hear_1on1_ranking(n_weeks = 0)
     ranking_for_scope(Player.player, n_weeks)
+  end
+
+  def hear_ranking(n_weeks = 0)
+    Ranking.combined(n_weeks)
   end
 
   def hear_ranking_2on2(n_weeks = 0)
@@ -182,6 +187,16 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
 
   def hear_r(n_weeks = 0)
     r_for_scope(Player.player, n_weeks)
+  end
+
+  def hear_last_games(n_weeks = 0)
+    results = Game.results(n_weeks)
+    ret = ""
+
+    results.each do |result|
+      ret = ret + result[:team1] + " - " + result[:team2] + ": " +  result[:team1_score].to_s + " - " + result[:team2_score].to_s
+    end
+    ret
   end
 
   def hear_r2on2(n_weeks = 0)
