@@ -191,6 +191,7 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
 
   def hear_last_games(n_weeks = 0)
     results = Game.results(n_weeks)
+    return results
 
     ret = ""
 
