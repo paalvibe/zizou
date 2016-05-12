@@ -10,6 +10,7 @@ class Game < ActiveRecord::Base
     from = (Date.today - (n_weeks * 7)).to_s
     # todo order by desc, todo what if n_weeks = 0
     games = Game.where("created_at >= ?", from)
+    return "#{caller(0)[0][55..-1]}:games: #{games.inspect}"
     results = {}
     games.each do |game|
       results[game.id] = {
