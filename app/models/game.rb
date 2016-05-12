@@ -22,7 +22,6 @@ class Game < ActiveRecord::Base
         team2_score: game.team_player2.score,
       }
     end
-    Rails.logger.error "#{caller(0)[0][55..-1]}:results: #{results.inspect}"
     results
   end
 

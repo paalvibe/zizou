@@ -126,7 +126,7 @@ class SlackBot
       goals_against = pr[:player].goals_conceded(from)
       goal_difference = goals_for - goals_against
 
-      name = pr[:player].member_name(members)
+      name = pr[:player].member_name()
 
       rows << ["#{index+1}", name, "#{pr[:player].games_played(from)}", "#{pr[:player].won(from)}", "#{pr[:player].drawn(from)}", "#{pr[:player].lost(from)}", "#{goals_for}", "#{goals_against}", "#{goal_difference}", "#{pr[:rating].to_i}"]
     end
@@ -152,7 +152,7 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     return "Error: Couldn't fetch members list" if members.blank?
 
     rows = ranking.map.with_index do |pr, index|
-      name = pr[:player].member_name(members)
+      name = pr[:player].member_name()
       "#{index+1}. #{name} (#{pr[:rating].to_i})"
     end
 

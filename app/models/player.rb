@@ -16,10 +16,8 @@ class Player < ActiveRecord::Base
     elos.size < Elo::STARTER_BOUNDRY
   end
 
-  def member_name(members = nil)
-    members = Slack.members if members.nil?
-    member = members.detect{ |m| m["id"] == self.username }
-    member.present? ? member["name"] : "unknown"
+  def member_name()
+    Slack.username_by_id(self.username)
   end
 
   def games_played(from = nil)

@@ -1,3 +1,5 @@
+require 'slack'
+
 class PairPlayer < Player
 
   def self.find_or_create_by_users(user1, user2)
@@ -13,15 +15,13 @@ class PairPlayer < Player
     username.split
   end
 
-  def member_name(members)
+  def member_name()
+    members = Slack.members if members.nil?
     username1, username2 = self.ids_from_username
 
-    member = members.detect{ |m| m["id"] == username1 }
-    name1 = member.present? ? member["name"] : "unknown"
+    name1 = Slack.username_by_id(username1)
+    name2 = Slack.username_by_id(username2)
 
-    member = members.detect{ |m| m["id"] == username2 }
-    name2 = member.present? ? member["name"] : "unknown"
-
-    "#{name1} et #{name2}"
+    "#{name1} and #{name2}"
   end
 end

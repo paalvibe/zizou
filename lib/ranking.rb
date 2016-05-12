@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'slack'
 
 class Ranking
   def self.combined(n_weeks)
@@ -20,7 +19,7 @@ class Ranking
 #       goals_against = pr[:player].goals_conceded(from)
 #       goal_difference = goals_for - goals_against
 
-#       name = pr[:player].member_name(members)
+#       name = pr[:player].member_name()
 
 #       rows << ["#{index+1}", name, "#{pr[:player].games_played(from)}", "#{pr[:player].won(from)}", "#{pr[:player].drawn(from)}", "#{pr[:player].lost(from)}", "#{goals_for}", "#{goals_against}", "#{goal_difference}", "#{pr[:rating].to_i}"]
 #     end
