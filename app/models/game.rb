@@ -5,17 +5,19 @@ class Game < ActiveRecord::Base
   belongs_to :team_player2, dependent: :destroy, class_name: "TeamPlayer"
 
   def self.results(n_weeks)
-    members = Slack.members
     n_weeks = n_weeks.to_i
-    from = (Date.today - (n_weeks * 7)).to_s
-    # todo order by desc, todo what if n_weeks = 0
-    games = Game.where("created_at >= ?", from)
+    games = nil
+    if n_weeks == 0
+      games = Game.order(created_at: :desc)
+    else
+      from = (Date.today - (n_weeks * 7)).to_s
+      games = Game.where("created_at >= ?", from).order(created_at: :desc)
+    end
     results = {}
-    games.each do |game|
-      return "#{caller(0)[0][55..-1]}:game: #{game.inspect}"
+    games.find_each do |game|
       results[game.id] = {
-        team1: game.team_player1.player.member_name(members),
-        team2: game.team_player2.player.member_name(members),
+        team1: game.team_player1.player.member_name(),
+        team2: game.team_player2.player.member_name(),
         team1_score: game.team_player1.score,
         team2_score: game.team_player2.score,
       }
