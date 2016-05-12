@@ -194,7 +194,9 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
 
     ret = ""
     from = Date.today.beginning_of_week - (n_weeks - 1).week if n_weeks > 0
+    return "from: #{from}"
     ret = ret + "from: #{from}"
+    # return "from: #{from}"
 
     results.each do |result|
       ret = ret + result[:team1] + " - " + result[:team2] + ": " +  result[:team1_score].to_s + " - " + result[:team2_score].to_s
