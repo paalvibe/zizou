@@ -1,3 +1,5 @@
+require 'date'
+
 class Game < ActiveRecord::Base
   belongs_to :team_player1, dependent: :destroy, class_name: "TeamPlayer"
   belongs_to :team_player2, dependent: :destroy, class_name: "TeamPlayer"
@@ -5,7 +7,7 @@ class Game < ActiveRecord::Base
   def self.results(n_weeks)
     members = Slack.members
     n_weeks = n_weeks.to_i
-    from = Date.today.beginning_of_week - (n_weeks - 1).week if n_weeks > 0
+    from = (Date.today - (n_weeks * 7)).to_s
     # todo order by desc, todo what if n_weeks = 0
     games = Game.where("created_at >= ?", from)
     results = {}

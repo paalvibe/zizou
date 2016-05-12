@@ -111,7 +111,7 @@ class SlackBot
 
   def ranking_for_scope(scope, n_weeks)
     n_weeks = n_weeks.to_i
-    from = Date.today.beginning_of_week - (n_weeks - 1).week if n_weeks > 0
+    from = (Date.today - (n_weeks * 7)).to_s
 
     ranking = scope.map { |player| { :rating => player.rating(from), :player => player} }
     ranking.sort_by! { |pr| -pr[:rating] }
@@ -143,7 +143,7 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
 
   def r_for_scope(scope, n_weeks)
     n_weeks = n_weeks.to_i
-    from = Date.today.beginning_of_week - (n_weeks - 1).week if n_weeks > 0
+    from = (Date.today - (n_weeks * 7)).to_s
 
     ranking = scope.map { |player| { :rating => player.rating(from), :player => player} }
     ranking.sort_by! { |pr| -pr[:rating] }
@@ -191,9 +191,10 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
 
   def hear_last_games(n_weeks = 0)
     results = Game.results(n_weeks)
+    n_weeks = n_weeks.to_i
 
     ret = ""
-    from = Date.today.beginning_of_week - (n_weeks - 1).week if n_weeks > 0
+    from = (Date.today - (n_weeks * 7)).to_s
     return "from: #{from}"
     ret = ret + "from: #{from}"
     # return "from: #{from}"
