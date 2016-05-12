@@ -6,6 +6,7 @@ class Game < ActiveRecord::Base
     members = Slack.members
     n_weeks = n_weeks.to_i
     from = Date.today.beginning_of_week - (n_weeks - 1).week if n_weeks > 0
+    # todo order by desc, todo what if n_weeks = 0
     games = Game.where("created_at >= ?", from)
     results = {}
     games.each do |game|
@@ -16,6 +17,7 @@ class Game < ActiveRecord::Base
         team2_score: game.team_player2.score,
       }
     end
+    Rails.logger.error "#{caller(0)[0][55..-1]}:results: #{results.inspect}"
     results
   end
 

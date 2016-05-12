@@ -4,7 +4,7 @@ class BotController < ApplicationController
   def index
     slackbot = SlackBot.new(params)
 
-    puts("params:" + params.inspect)
+    Rails.logger.error("params:" + params.inspect)
 
     render json: { "text" => slackbot.answer }
   end
