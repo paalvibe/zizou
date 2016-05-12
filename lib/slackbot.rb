@@ -191,13 +191,8 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
 
   def hear_last_games(n_weeks = 0)
     results = Game.results(n_weeks)
-    n_weeks = n_weeks.to_i
 
     ret = ""
-    from = (Date.today - (n_weeks * 7)).to_s
-    return "from: #{from}"
-    ret = ret + "from: #{from}"
-    # return "from: #{from}"
 
     results.each do |result|
       ret = ret + result[:team1] + " - " + result[:team2] + ": " +  result[:team1_score].to_s + " - " + result[:team2_score].to_s
