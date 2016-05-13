@@ -1,0 +1,1 @@
+SlackBot.new({"text" => "fifa ranking_2on2", "token" => ENV["SLACK_WEBHOOK_TOKEN"]}).answer

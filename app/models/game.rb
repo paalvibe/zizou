@@ -17,8 +17,8 @@ class Game < ActiveRecord::Base
     games.find_each do |game|
       results[game.id.to_s] = {
         created_at_str: game.created_at.to_s,
-        team1: game.team_player1.player.member_name(),
-        team2: game.team_player2.player.member_name(),
+        team1: game.team_player1.player.member_name,
+        team2: game.team_player2.player.member_name,
         team1_score: game.team_player1.score,
         team2_score: game.team_player2.score,
       }

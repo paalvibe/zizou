@@ -15,8 +15,7 @@ class PairPlayer < Player
     username.split
   end
 
-  def member_name()
-    members = Slack.members if members.nil?
+  def member_name
     username1, username2 = self.ids_from_username
 
     name1 = Slack.username_by_id(username1)
