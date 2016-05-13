@@ -111,7 +111,7 @@ class SlackBot
 
   def ranking_for_scope(scope, n_weeks)
     n_weeks = n_weeks.to_i
-    from = (Date.today - (n_weeks * 7)).to_s
+    from = (Date.today - (n_weeks * 7)).to_s if n_weeks > 0
 
     ranking = scope.map { |player| { :rating => player.rating(from), :player => player} }
     ranking.sort_by! { |pr| -pr[:rating] }
