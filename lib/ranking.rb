@@ -6,8 +6,8 @@ class Ranking
 
   def self.usernames_in_game(game)
     names = {team1: [], team2: []}
-    {team1: game.team_player1, team2: game.team_player2}.each do |team, player|
-      if player.is? TeamPlayer
+    {team1: game.team_player1.player, team2: game.team_player2.player}.each do |team, player|
+      if player.is_a? PairPlayer
         usernames = player.username.split
         names[team] << usernames[0]
         names[team] << usernames[1]
@@ -53,14 +53,15 @@ class Ranking
     end
     # process all results
     players = {}
-    other_team = {team1: :team2, team2: team1}
+    other_team = {team1: :team2, team2: :team1}
     # add missing players and collect team ratings
-    results.each do |result|
+    results.each do |id, result|
       team_ratings = {team1: 0, team2: 0}
-      result.names.each do |team, names|
+      result[:names].each do |team, names|
         names.each do |username|
           if not (players.include?(username))
             player = {name: Slack.username_by_id(username), rating: 1500, goals_for: 0, goals_against: 0, wins: 0, losses: 0}
+            players[username] = player
           else
             player = players[username]
           end
@@ -71,7 +72,7 @@ class Ranking
       rating_deltas = calculate_rating_deltas(team_ratings, result)
 
       # apply deltas to player stats
-      result.names.each do |team, names|
+      result[:names].each do |team, names|
         names.each do |username|
           players[username][:rating] = players[username][:rating] + rating_deltas[team]
           players[username][:goals_for] = players[username][:goals_for] + result[:goals][team]
@@ -86,12 +87,13 @@ class Ranking
     end
 
     sorted_players = players.sort_by{|k, v| v[:rating]}.reverse
+    puts "#{caller(0)[0][55..-1]}:sorted_players: #{sorted_players.inspect}"
 
     rows = []
     idx = 0
     sorted_players.each do |username, p|
       idx = idx + 1
-      rows << ["#{idx}", p[:name], p[:rating], p[:wins] + p[:losses], p[:goals_for], p[:goals_against], p[:goals_for] - p[:goals_against]]
+      rows << ["#{idx}", p[:name], p[:rating], p[:wins] + p[:losses], p[:wins], p[:losses], p[:goals_for], p[:goals_against], p[:goals_for] - p[:goals_against]]
     end
     table = Terminal::Table.new :title => "General player rating", :headings => ["Pos", "Name", "Rat.", "GP", "W", "L", "GF", "GA", "GD"], :rows => rows
     #     table.align_column(8, :right) # right align the diff column content
@@ -104,6 +106,7 @@ Pos: Rating position. Rat: rating. GP: Games played. W: Won. L: Lost. GF: Goals 
   end
 
   def self.calculate_rating_deltas(team_ratings, result)
+    other_team = {team1: :team2, team2: :team1}
     rating_deltas = {}
     default_win_weight = 10 # what multiplier of rating diff should be applied
     score_diff_weight = 0.3 # how much should
