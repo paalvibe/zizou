@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'slack'
 require 'terminal-table'
+require 'pp'
 
 class Ranking
 
@@ -76,7 +77,7 @@ class Ranking
         names.each do |username|
           players[username][:rating] = players[username][:rating] + rating_deltas[team]
           players[username][:goals_for] = players[username][:goals_for] + result[:goals][team]
-          players[username][:goals_for] = players[username][:goals_against] + result[:goals][other_team[team]]
+          players[username][:goals_against] = players[username][:goals_against] + result[:goals][other_team[team]]
           if result[:win][team]
             players[username][:wins] = players[username][:wins] + 1
           else
@@ -87,7 +88,6 @@ class Ranking
     end
 
     sorted_players = players.sort_by{|k, v| v[:rating]}.reverse
-    puts "#{caller(0)[0][55..-1]}:sorted_players: #{sorted_players.inspect}"
 
     rows = []
     idx = 0
@@ -111,7 +111,7 @@ Pos: Rating position. Rat: rating. GP: Games played. W: Won. L: Lost. GF: Goals 
     default_win_weight = 10 # what multiplier of rating diff should be applied
     score_diff_weight = 0.3 # how much should
     base_delta_constant = 100
-    rating_diff_base_weight = -10
+    rating_diff_base_weight = 10
     
     # example rating_points:
     # team1 rating: 1000 + 1600 = 2600
@@ -133,15 +133,16 @@ Pos: Rating position. Rat: rating. GP: Games played. W: Won. L: Lost. GF: Goals 
     team = :team1
     rating_sum = team_ratings[team] + team_ratings[other_team[team]]
     rating_diff = team_ratings[team] - team_ratings[other_team[team]]
-    relative_rating_diff = rating_diff / rating_sum
+    relative_rating_diff = rating_diff / rating_sum.to_f
     if result[:win][team]
       result_weight = default_win_weight
     else
       result_weight = -default_win_weight
     end
     result_weight = result_weight + result[:goals][team] - result[:goals][other_team[team]]
-    result_counter_weight = default_win_weight * 2
+    result_counter_weight = default_win_weight * 2.0
     base_delta = base_delta_constant * (result_weight / result_counter_weight)
+    relative_rating_diff = 0.1 if relative_rating_diff < 0.01
     rating_delta = base_delta * rating_diff_base_weight * relative_rating_diff
     rating_deltas[team] = rating_delta
     rating_deltas[other_team[team]] = -rating_delta
