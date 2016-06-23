@@ -93,7 +93,7 @@ class Ranking
     idx = 0
     sorted_players.each do |username, p|
       idx = idx + 1
-      rows << ["#{idx}", p[:name], p[:rating], p[:wins] + p[:losses], p[:wins], p[:losses], p[:goals_for], p[:goals_against], p[:goals_for] - p[:goals_against]]
+      rows << ["#{idx}", p[:name], '%.2f' % p[:rating], p[:wins] + p[:losses], p[:wins], p[:losses], p[:goals_for], p[:goals_against], p[:goals_for] - p[:goals_against]]
     end
     table = Terminal::Table.new :title => "General player rating", :headings => ["Pos", "Name", "Rat.", "GP", "W", "L", "GF", "GA", "GD"], :rows => rows
     #     table.align_column(8, :right) # right align the diff column content
@@ -110,40 +110,57 @@ Pos: Rating position. Rat: rating. GP: Games played. W: Won. L: Lost. GF: Goals 
     rating_deltas = {}
     default_win_weight = 10 # what multiplier of rating diff should be applied
     score_diff_weight = 0.3 # how much should
-    base_delta_constant = 100
+    base_delta_constant = 10
     rating_diff_base_weight = 10
-    
+
     # example rating_points:
-    # team1 rating: 1000 + 1600 = 2600
-    # team2 rating 1600 + 1550 = 3050
-    # rating_diff = -450
+    # beating stronger team |--VS--| beating weaker team
+    # team1 rating: 1000 + 1600 = 2600 |--VS--| 1600 + 1550 = 3050
+    # team2 rating 1600 + 1550 = 3050 |--VS--| 1000 + 1600 = 2600
+    # rating_diff = -450 |--VS--| 450
     # rating_sum = 5650
-    # relative_rating_diff = -0.0796460177
+    # relative_rating_diff = -0.0796460177 |--VS--| 0.0796460177
     # team1 goals: 10
     # team2 goals: 6
     # team1 goal_diff = 4
-    # team2 goal_diff = 4
     # team1 result_weight: 10 + 10 - 6 = 14
-    # team2 result_weight: -10 + 6 - 10 = -14
-    #
-    # team1 base_delta: 100 (base_delta_constant)  * 14 (result_weight) / 20 (default_win_weight*2) = 70
-    # team2 base_delta: 100 (base_delta_constant)  * -14 (result_weight) / 20 (default_win_weight*2) = -70
-    # team1 rating delta: 70 (base_delta) * -10 (rating_diff_base_weight) *  -0.08 (relative_rating_diff) = 56
-    # team2 rating delta: 70 (base_delta) * -10 (rating_diff_base_weight) *  0.08 (relative_rating_diff) = -56
+    # team1 base_delta: 10 (base_delta_constant)  * 14 (result_weight) / 20 (default_win_weight*2) = 70
+    # handicap_multiplier = 0.50 + (-0.079 * -1) / 2 = 0.535 |--VS--| (1 - 0.079) / 2 = 0.4605
+    # team1 rating delta: 7 (base_delta) * 10 (rating_diff_base_weight) *  0.535 (relative_rating_diff) = 56
+    # |--VS--| 7 (base_delta) * 10 (rating_diff_base_weight) *  0.4605 (relative_rating_diff) = 37
+    # team2 rating delta: -56 |--VS--| 32
     team = :team1
     rating_sum = team_ratings[team] + team_ratings[other_team[team]]
     rating_diff = team_ratings[team] - team_ratings[other_team[team]]
     relative_rating_diff = rating_diff / rating_sum.to_f
-    if result[:win][team]
-      result_weight = default_win_weight
+
+    # ensure some diff if equal teams playing (otherwise 0 value for two new teams with equal rating)
+    if relative_rating_diff < 0
+      relative_rating_diff = -0.1 if relative_rating_diff > -0.1
     else
-      result_weight = -default_win_weight
+      relative_rating_diff = 0.1 if relative_rating_diff < 0.1
     end
-    result_weight = result_weight + result[:goals][team] - result[:goals][other_team[team]]
+
+    stronger_team_wins_multiplier = handicap_multiplier = (1 - relative_rating_diff) / 2 # (max 0.5)
+    weaker_team_wins_multiplier = 0.5 + ((relative_rating_diff * -1) / 2) # (min 0.5, max 1)
+    if result[:win][team] # beating a weaker team
+      if relative_rating_diff > 0 # playing a weaker team
+        handicap_multiplier = stronger_team_wins_multiplier
+      else # beating a stronger team
+        handicap_multiplier = weaker_team_wins_multiplier
+      end
+    else #loosing
+      if relative_rating_diff > 0 # loosing to a weaker team
+        handicap_multiplier = -weaker_team_wins_multiplier
+      else # loosing to a stronger team
+        handicap_multiplier = -stronger_team_wins_multiplier
+      end
+    end
+
+    result_weight = default_win_weight + result[:goals][team] - result[:goals][other_team[team]]
     result_counter_weight = default_win_weight * 2.0
     base_delta = base_delta_constant * (result_weight / result_counter_weight)
-    relative_rating_diff = 0.1 if relative_rating_diff < 0.01
-    rating_delta = base_delta * rating_diff_base_weight * relative_rating_diff
+    rating_delta = base_delta * rating_diff_base_weight * handicap_multiplier
     rating_deltas[team] = rating_delta
     rating_deltas[other_team[team]] = -rating_delta
     rating_deltas
