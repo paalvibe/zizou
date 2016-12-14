@@ -173,23 +173,23 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     result_2v2(player11, player12, DEFAULT_TEAM, score1, player21, player22, DEFAULT_TEAM, score2)
   end
 
-  def hear_1on1_ranking(n_weeks = 0)
+  def hear_1on1_ranking(n_weeks = 8)
     ranking_for_scope(Player.player, n_weeks)
   end
 
-  def hear_ranking(n_weeks = 0)
+  def hear_ranking(n_weeks = 8)
     Ranking.combined(n_weeks)
   end
 
-  def hear_ranking_2on2(n_weeks = 0)
+  def hear_ranking_2on2(n_weeks = 8)
     ranking_for_scope(PairPlayer.all, n_weeks)
   end
 
-  def hear_r(n_weeks = 0)
+  def hear_r(n_weeks = 8)
     r_for_scope(Player.player, n_weeks)
   end
 
-  def hear_last_games(n_weeks = 0)
+  def hear_last_games(n_weeks = 8)
     results = Game.results(n_weeks)
 
     ret = ""
@@ -200,7 +200,7 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     ret
   end
 
-  def hear_r2on2(n_weeks = 0)
+  def hear_r2on2(n_weeks = 8)
     r_for_scope(PairPlayer.all, n_weeks)
   end
 
