@@ -8,7 +8,7 @@ class Department < ActiveRecord::Base
   def self.add_user(dep_name, username)
     begin
       department = Department.create_or_update({name: dep_name})
-      player = DepartmentPlayer.find_or_create_by({department: department, username: username})
+      player = DepartmentPlayer.find_or_create_by(department: department, username: username)
       department.department_players << player
       department.save
       "User <@#{username}> added to department #{dep_name}"
@@ -17,11 +17,11 @@ class Department < ActiveRecord::Base
     end
   end
 
-  def remove_user(username)
+  def remove_user(dep_name, username)
     begin
       department = Department.create_or_update({name: dep_name})
-      player = Player.find_or_create_by(username: username)
-      department.players.delete(player)
+      player = DepartmentPlayer.find_by(username: username, department: department)
+      department.department_players.delete(player)
       "User <@#{username}> removed from department #{dep_name}"
     rescue
       "Error removing user <@#{username}> from department #{dep_name}"
@@ -41,6 +41,6 @@ class Department < ActiveRecord::Base
   end
 
     def str_rep()
-      "department: #{self.name}\n  players:\n    " + self.players.map { |p| "<@#{p.username}>" }.join(" ")
+      "department: #{self.name}\n  players:\n    " + self.department_players.map { |p| "<@#{p.username}>" }.join(" ")
     end
 end

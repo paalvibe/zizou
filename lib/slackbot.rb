@@ -280,12 +280,12 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     DepartmentRanking.ranking(n_weeks)
   end
 
-  def hear_department_add(dep_name, username)
+  def hear_department_add_user(dep_name, username)
     answer = Department.add_user(dep_name, extract_user_id(username))
     answer
   end
 
-  def hear_department_remove(dep_name, username)
+  def hear_department_remove_user(dep_name, username)
     answer = Department.remove_user(dep_name, extract_user_id(username))
     answer
   end
