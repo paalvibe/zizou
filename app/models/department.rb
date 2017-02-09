@@ -17,7 +17,7 @@ class Department < ActiveRecord::Base
     end
   end
 
-  def remove_user(dep_name, username)
+  def self.remove_user(dep_name, username)
     begin
       department = Department.create_or_update({name: dep_name})
       player = DepartmentPlayer.find_by(username: username, department: department)
