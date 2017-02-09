@@ -41,6 +41,6 @@ class Department < ActiveRecord::Base
   end
 
     def str_rep()
-      "department: #{self.name}\n  players:\n    " + self.department_players.map { |p| "<@#{p.username}>" }.join(" ")
+      "department: #{self.name}\n  players: " + self.department_players.map { |p| "<@#{p.username}>" }.join(" ")
     end
 end
