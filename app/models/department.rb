@@ -7,6 +7,7 @@ class Department < ActiveRecord::Base
 
   def self.add_user(dep_name, username)
     begin
+      raise "Missing department name" if dep_name.blank?
       department = Department.create_or_update({name: dep_name})
       player = DepartmentPlayer.find_or_create_by(department: department, username: username)
       department.department_players << player
@@ -22,6 +23,7 @@ class Department < ActiveRecord::Base
       department = Department.create_or_update({name: dep_name})
       player = DepartmentPlayer.find_by(username: username, department: department)
       department.department_players.delete(player)
+      player.destroy
       "User <@#{username}> removed from department #{dep_name}"
     rescue
       "Error removing user <@#{username}> from department #{dep_name}"

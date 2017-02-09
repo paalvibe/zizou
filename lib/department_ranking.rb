@@ -11,6 +11,7 @@ class DepartmentRanking
       dep_players = DepartmentPlayer.where({username: username})
       next if dep_players.nil?
       dep_players.each do |dep_player|
+        next if dep_player.department.nil?
         dep_name = dep_player.department.name
         if not departments.include?(dep_name)
           new_dep = {name: dep_name, players: {}, count: 1}
