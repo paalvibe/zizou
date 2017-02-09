@@ -3,6 +3,7 @@ require 'slack'
 require 'football_quotes'
 require 'norsk_fotball'
 require 'ranking'
+require 'department_ranking'
 require 'taunt'
 require 'terminal-table'
 require 'net/http'
@@ -48,6 +49,11 @@ class SlackBot
   # takes an user_id and formats it in order to let Slack highlight the user
   def format_username(user_id)
     "<@#{user_id}>"
+  end
+
+  # takes an user_id and formats it in order to let Slack highlight the user
+  def format_department(department)
+    department.str_rep
   end
 
   # takes an username (with Slack's format) and extracts the user_id
@@ -260,6 +266,27 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     challenges = Challenge.where("date >= ?", DateTime.now).order(:date)
     answer = "Challenges:\n"
     answer += challenges.map { |challenge| "#{format_username(challenge.player1_id)} vs #{format_username(challenge.player2_id)} à #{challenge.date.strftime("%H:%M")}" }.join("\n")
+    answer
+  end
+
+  def hear_departments
+    departments = Department.all
+    answer = "Departments:\n"
+    answer += departments.map { |department| "#{format_department(department)}" }.join("\n")
+    answer
+  end
+
+  def hear_department_rankings(n_weeks = DEFAULT_WEEKS)
+    DepartmentRanking.ranking(n_weeks)
+  end
+
+  def hear_department_add(dep_name, username)
+    answer = Department.add_user(dep_name, extract_user_id(username))
+    answer
+  end
+
+  def hear_department_remove(dep_name, username)
+    answer = Department.remove_user(dep_name, extract_user_id(username))
     answer
   end
 

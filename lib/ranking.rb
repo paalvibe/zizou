@@ -19,7 +19,7 @@ class Ranking
     names
   end
 
-  def self.combined(n_weeks)
+  def self.combined_players_sorted(n_weeks)
     n_weeks = n_weeks.to_i
     games = nil
     if n_weeks == 0
@@ -87,22 +87,7 @@ class Ranking
       end
     end
 
-    sorted_players = players.sort_by{|k, v| v[:rating]}.reverse
-
-    rows = []
-    idx = 0
-    sorted_players.each do |username, p|
-      idx = idx + 1
-      rows << ["#{idx}", p[:name], '%.2f' % p[:rating], p[:wins] + p[:losses], p[:wins], p[:losses], p[:goals_for], p[:goals_against], p[:goals_for] - p[:goals_against]]
-    end
-    table = Terminal::Table.new :title => "General player rating", :headings => ["Pos", "Name", "Rat.", "GP", "W", "L", "GF", "GA", "GD"], :rows => rows
-    #     table.align_column(8, :right) # right align the diff column content
-    #     table.align_column(9, :center) # center align the rating column content
-
-      "```#{table}```
-
-Pos: Rating position. Rat: rating. GP: Games played. W: Won. L: Lost. GF: Goals For. GA: Goals against. GA: Goals diff.
-"
+    players.sort_by{|k, v| v[:rating]}.reverse
   end
 
   def self.calculate_rating_deltas(team_ratings, result)
@@ -164,5 +149,24 @@ Pos: Rating position. Rat: rating. GP: Games played. W: Won. L: Lost. GF: Goals 
     rating_deltas[team] = rating_delta
     rating_deltas[other_team[team]] = -rating_delta
     rating_deltas
+  end
+
+  def self.combined(n_weeks)
+    sorted_players = combined_players_sorted(n_weeks)
+
+    rows = []
+    idx = 0
+    sorted_players.each do |username, p|
+      idx = idx + 1
+      rows << ["#{idx}", p[:name], '%.2f' % p[:rating], p[:wins] + p[:losses], p[:wins], p[:losses], p[:goals_for], p[:goals_against], p[:goals_for] - p[:goals_against]]
+    end
+    table = Terminal::Table.new :title => "General player rating", :headings => ["Pos", "Name", "Rat.", "GP", "W", "L", "GF", "GA", "GD"], :rows => rows
+    #     table.align_column(8, :right) # right align the diff column content
+    #     table.align_column(9, :center) # center align the rating column content
+
+      "```#{table}```
+
+Pos: Rating position. Rat: rating. GP: Games played. W: Won. L: Lost. GF: Goals For. GA: Goals against. GA: Goals diff.
+"
   end
 end
