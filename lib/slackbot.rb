@@ -276,7 +276,7 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
     answer
   end
 
-  def hear_department_rankings(n_weeks = DEFAULT_WEEKS)
+  def hear_department_ranking(n_weeks = DEFAULT_WEEKS)
     DepartmentRanking.ranking(n_weeks)
   end
 
