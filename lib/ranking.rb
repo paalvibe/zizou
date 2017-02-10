@@ -19,22 +19,14 @@ class Ranking
     names
   end
 
-  def self.combined_players_sorted(n_weeks)
-    n_weeks = n_weeks.to_i
-    games = nil
-    if n_weeks == 0
-      games = Game.order(created_at: :desc)
-    else
-      from = (Date.today - (n_weeks * 7)).to_s
-      games = Game.where("created_at >= ?", from).order(created_at: :desc)
-    end
+  def self.combined_players_sorted(games)
     results = {}
 
     players = {}
 
     default_rating = 1500
 
-    games.find_each do |game|
+    games.each do |game|
       # create list of results
       names = usernames_in_game(game)
 
@@ -151,9 +143,24 @@ class Ranking
     rating_deltas
   end
 
-  def self.combined(n_weeks)
-    sorted_players = combined_players_sorted(n_weeks)
+  def self.games(n_weeks)
+    n_weeks = n_weeks.to_i
+    games = nil
+    if n_weeks == 0
+      games = Game.order(created_at: :desc)
+    else
+      from = (Date.today - (n_weeks * 7)).to_s
+      games = Game.where("created_at >= ?", from).order(created_at: :desc)
+    end
+    games
+  end
 
+  def self.combined(n_weeks)
+    combined_for_games(self.games(n_weeks))
+  end
+
+  def self.combined_for_games(games)
+    sorted_players = combined_players_sorted(games)
     rows = []
     idx = 0
     sorted_players.each do |username, p|

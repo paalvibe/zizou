@@ -31,11 +31,18 @@ class DepartmentRanking
     departments
   end
 
-  def self.ranking(n_weeks)
-    sorted_players = Ranking.combined_players_sorted(n_weeks)
+  def self.sorted_departments(games)
+    sorted_players = Ranking.combined_players_sorted(games)
     departments = group_by_department(sorted_players)
-    sorted_departments = departments.sort_by{|k, v| (v[:rating] / v[:count].to_f)}.reverse
+    departments.sort_by{|k, v| (v[:rating] / v[:count].to_f)}.reverse
+  end
 
+  def self.ranking(n_weeks)
+    games = Ranking.games(n_weeks)
+    print_ranking(sorted_departments(games))
+  end
+
+  def self.print_ranking(sorted_departments)
     rows = []
     idx = 0
     sorted_departments.each do |dep_name, d|

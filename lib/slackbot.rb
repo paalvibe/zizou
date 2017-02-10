@@ -3,6 +3,7 @@ require 'slack'
 require 'football_quotes'
 require 'norsk_fotball'
 require 'ranking'
+require 'ranking_diff'
 require 'department_ranking'
 require 'taunt'
 require 'terminal-table'
@@ -281,13 +282,15 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
   end
 
   def hear_department_add_user(dep_name, username)
-    answer = Department.add_user(dep_name, extract_user_id(username))
-    answer
+    Department.add_user(dep_name, extract_user_id(username))
   end
 
   def hear_department_remove_user(dep_name, username)
-    answer = Department.remove_user(dep_name, extract_user_id(username))
-    answer
+    Department.remove_user(dep_name, extract_user_id(username))
+  end
+
+  def hear_ranking_diff(games = 1, n_weeks = DEFAULT_WEEKS)
+    RankingDiff.departments_and_players(games, n_weeks)
   end
 
   def hear_stats(player)
