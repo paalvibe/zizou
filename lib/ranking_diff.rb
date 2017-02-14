@@ -14,7 +14,7 @@ class RankingDiff
     positions
   end
 
-  def self.departments_and_players(negative_game_offset, n_weeks)
+  def self.players(negative_game_offset, n_weeks)
     negative_game_offset = negative_game_offset.to_i
     negative_game_offset = 1 if negative_game_offset < 1
     all_games = Ranking.games(n_weeks)
@@ -48,16 +48,12 @@ class RankingDiff
     idx = 0
     sorted_player_diffs.to_h.each do |username, d|
       idx = idx + 1
-      rows << ["#{idx}",
-               d[:name],
+      rows << [d[:name],
                "#{d[:old_pos]} -> #{d[:new_pos]}",
-               ('%.2f -> %.2f' % [d[:old_rating], d[:new_rating]]),
-               ('%.2f' % (d[:new_rating] - d[:old_rating]))]
+               ('%.2f -> %.2f' % [d[:old_rating], d[:new_rating]])]
     end
-    table = Terminal::Table.new :title => "Player rating changes", :headings => ["Old Pos => New Pos", "Name", "Old rat. -> New rat.", "Diff"], :rows => rows
+    table = Terminal::Table.new :title => "Player rating changes", :headings => ["Name", "Pos.", "Rating"], :rows => rows
     ret = "```#{table}```
-
-Pos: Rating position. rat: rating.
 "
 
     # involved_departments = involved_usernames.map{ |u| Department.find_by_username(u) }.flatten

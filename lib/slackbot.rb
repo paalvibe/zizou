@@ -173,12 +173,14 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
 
   def hear_result_1on1(player1, score1, player2, score2)
     create_team_if_missing(DEFAULT_TEAM, 1, 1)
-    match(player1, DEFAULT_TEAM, score1, player2, DEFAULT_TEAM, score2)
+    match(player1, DEFAULT_TEAM, score1, player2, DEFAULT_TEAM, score2) + "
+" + RankingDiff.players(1, DEFAULT_WEEKS)
   end
 
   def hear_result_2on2(player11, player12, score1, player21, player22, score2)
     create_team_if_missing(DEFAULT_TEAM, 1, 1)
-    result_2v2(player11, player12, DEFAULT_TEAM, score1, player21, player22, DEFAULT_TEAM, score2)
+    result_2v2(player11, player12, DEFAULT_TEAM, score1, player21, player22, DEFAULT_TEAM, score2) + "
+" + RankingDiff.players(1, DEFAULT_WEEKS)
   end
 
   def hear_1on1_ranking(n_weeks = DEFAULT_WEEKS)
@@ -290,7 +292,7 @@ J: Games played. W: Won. T: Ties. L: Lost. GF: Goals For. GA: Goals against.
   end
 
   def hear_ranking_diff(games = 1, n_weeks = DEFAULT_WEEKS)
-    RankingDiff.departments_and_players(games, n_weeks)
+    RankingDiff.players(games, n_weeks)
   end
 
   def hear_stats(player)
