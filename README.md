@@ -51,6 +51,10 @@ In lib/slackbot.rb, you can add your own commands.
 As you'll see when inspecting this file, every command is actually a method named `hear_COMMANDNAME`. To add commands, simply add a new PRIVATE method named `hear_yourCommandName(optional_parameters...)`.
 The parameters will be displayed in the help and optional parameters will immediately be annotated as optional in the help as well.
 
+## Security
+
+Use bundle-audit tool to look for vulnerabilities.
+
 ## Future work
 
 There are a couple of improvements we have in mind. Feel free to send us pull
